@@ -26,22 +26,22 @@ import streamlit as st
 
 class QueGenerator():
     def __init__(self):
-    self.que_model = T5ForConditionalGeneration.from_pretrained('./t5_que_gen_model/t5_base_que_gen/')
-    self.ans_model = T5ForConditionalGeneration.from_pretrained('./t5_ans_gen_model/t5_base_ans_gen/')
-    
-    self.que_tokenizer = T5Tokenizer.from_pretrained('./t5_que_gen_model/t5_base_tok_que_gen/')
-    self.ans_tokenizer = T5Tokenizer.from_pretrained('./t5_ans_gen_model/t5_base_tok_ans_gen/')
-    
-    self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    
-    self.que_model = self.que_model.to(self.device)
-    self.ans_model = self.ans_model.to(self.device)
-    
-    def generate(self, text):
-        answers = self._get_answers(text)
-        questions = self._get_questions(text, answers)
-        output = [{'answer': ans, 'question': que} for ans, que in zip(answers, questions)]
-        return output
+        self.que_model = T5ForConditionalGeneration.from_pretrained('./t5_que_gen_model/t5_base_que_gen/')
+        self.ans_model = T5ForConditionalGeneration.from_pretrained('./t5_ans_gen_model/t5_base_ans_gen/')
+        
+        self.que_tokenizer = T5Tokenizer.from_pretrained('./t5_que_gen_model/t5_base_tok_que_gen/')
+        self.ans_tokenizer = T5Tokenizer.from_pretrained('./t5_ans_gen_model/t5_base_tok_ans_gen/')
+        
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        
+        self.que_model = self.que_model.to(self.device)
+            self.ans_model = self.ans_model.to(self.device)
+
+def generate(self, text):
+    answers = self._get_answers(text)
+    questions = self._get_questions(text, answers)
+    output = [{'answer': ans, 'question': que} for ans, que in zip(answers, questions)]
+    return output
     
     def _get_answers(self, text):
         # split into sentences
@@ -75,12 +75,15 @@ class QueGenerator():
         for ans in answers:
             input_text = "%s [SEP] %s </s>" % (ans, text)
             examples.append(input_text)
-        
+    
         batch = self.que_tokenizer.batch_encode_plus(examples, max_length=512, pad_to_max_length=True, return_tensors="pt")
         with torch.no_grad():
-        outs = self.que_model.generate(input_ids=batch['input_ids'].to(self.device), attention_mask=batch['attention_mask'].to(self.device), max_length=32, num_beams = 4)
+            outs = self.que_model.generate(input_ids=batch['input_ids'].to(self.device), attention_mask=batch['attention_mask'].to(self.device), max_length=32, num_beams = 4)
         dec = [self.que_tokenizer.decode(ids, skip_special_tokens=False) for ids in outs]
-        return dec
+    return dec
+
+def generate_questions():
+    st.write(que_generator.generate(user_input))
 
 que_generator = QueGenerator()
 
