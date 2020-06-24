@@ -35,13 +35,13 @@ class QueGenerator():
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
         self.que_model = self.que_model.to(self.device)
-            self.ans_model = self.ans_model.to(self.device)
+        self.ans_model = self.ans_model.to(self.device)
 
-def generate(self, text):
-    answers = self._get_answers(text)
-    questions = self._get_questions(text, answers)
-    output = [{'answer': ans, 'question': que} for ans, que in zip(answers, questions)]
-    return output
+    def generate(self, text):
+        answers = self._get_answers(text)
+        questions = self._get_questions(text, answers)
+        output = [{'answer': ans, 'question': que} for ans, que in zip(answers, questions)]
+        return output
     
     def _get_answers(self, text):
         # split into sentences
@@ -80,7 +80,7 @@ def generate(self, text):
         with torch.no_grad():
             outs = self.que_model.generate(input_ids=batch['input_ids'].to(self.device), attention_mask=batch['attention_mask'].to(self.device), max_length=32, num_beams = 4)
         dec = [self.que_tokenizer.decode(ids, skip_special_tokens=False) for ids in outs]
-    return dec
+        return dec
 
 def generate_questions():
     st.write(que_generator.generate(user_input))
@@ -91,8 +91,6 @@ st.write("""
     # Instant Questions
     """)
 user_input = st.text_area("Enter your text", "Ya, just paste in whatever you have, I'll figure it out. ")
+
 if st.button('Generate Questions'):
     generate_questions()
-
-st.write(que_generator.generate(user_input))
-
